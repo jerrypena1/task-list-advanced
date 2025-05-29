@@ -31,7 +31,7 @@ export function CodeBlock({ code, language }: CodeBlockProps) {
     } else {
       setRenderedCode(code);
     }
-  }, [code, variables]);
+  }, [code, variables, mergingVariables]);
 
   const renderCodeBlockCode = (code: string): string => {
     function replaceTokenIgnoreCase(input: string, tokenDefinition: {token: string, value: string}): string {

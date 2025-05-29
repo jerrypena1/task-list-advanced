@@ -208,12 +208,12 @@ export default function App() {
           <div className='mb-2 flex gap-2 justify-end'>
             <button
               type="submit"
-              className={`text-white px-4 py-2 my-4 rounded-lg flex items-center gap-2 ${hasTokens ? 'bg-blue-500 hover:bg-blue-600 transition-colors': 'bg-gray-200'}`}
+              className={`text-white px-4 py-2 my-4 rounded-lg flex items-center gap-2 ${hasTokens ? mergingVariables ? 'bg-orange-600 hover:bg-blue-600 transition-colors': 'bg-blue-500 hover:bg-blue-600 transition-colors': 'bg-gray-200'}`}
               onClick={handleMergeVariableTrigger}
               disabled={!hasTokens}
             >
               <Merge size={20} />
-              {mergingVariables ? "Hide Merged Variables" : "Show Merged Variables"}
+              {mergingVariables ? "Disable Merged Variables" : "Show Merged Variables"}
             </button>
           </div>
         ): ''}
