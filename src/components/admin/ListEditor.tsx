@@ -4,12 +4,14 @@ import { TaskInput } from '../TaskInput';
 import { TaskList } from '../TaskList';
 import { Task } from '../../types/task';
 import { saveTaskList } from '../../services/taskListService';
+import { Variable } from '../../types/variable';
 
 interface ListEditorProps {
   list?: {
     id?: string;
     name: string;
     data: Task[];
+    variables: Variable[];
     is_example?: boolean;
   };
   onSave: () => void;
@@ -20,6 +22,7 @@ interface ListEditorProps {
 export function ListEditor({ list, onSave, onCancel, onError }: ListEditorProps) {
   const [name, setName] = useState(list?.name || '');
   const [tasks, setTasks] = useState<Task[]>(list?.data || []);
+  const [variables, setVariables] = useState<Variable[]>(list?.variables || []);
   const [isExample, setIsExample] = useState(list?.is_example || false);
   const [saving, setSaving] = useState(false);
 
@@ -36,7 +39,7 @@ export function ListEditor({ list, onSave, onCancel, onError }: ListEditorProps)
 
     setSaving(true);
     try {
-      await saveTaskList(name, tasks, isExample);
+      await saveTaskList(name, tasks, variables, isExample);
       onSave();
     } catch (error) {
       console.error('Error saving list:', error);

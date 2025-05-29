@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import { HelpCircle } from 'lucide-react';
+import { HelpCircle, Merge } from 'lucide-react';
 import { useSettings } from './hooks/useSettings';
 import { useTasks } from './hooks/useTasks';
 import { useAuth } from './hooks/useAuth';
 import { Header } from './components/Header';
 import { TaskInput } from './components/TaskInput';
 import { TaskListSection } from './components/TaskListSection';
+import { VariableListSection } from './components/VariableListSection';
 import { Footer } from './components/Footer';
 import { ConfirmationModal } from './components/ConfirmationModal';
 import { SettingsModal } from './components/SettingsModal';
@@ -16,6 +17,9 @@ import { Tour } from './components/tour/Tour';
 import { AuthModal } from './components/auth/AuthModal';
 import { AdminDashboard } from './components/admin/AdminDashboard';
 import { supabase } from './lib/supabase';
+import { Task } from './types/task';
+import { MergeVariablesModal } from './components/MergeVariablesModal';
+import { Variable } from './types/variable';
 
 export default function App() {
   const [settings, setSettings] = useSettings();
@@ -28,16 +32,22 @@ export default function App() {
     toggleTask,
     deleteTask,
     editTask,
+    variables,
+    setVariables,
+    addVariable,
+    deleteVariable,
+    editVariable,
     reorderTasks
   } = useTasks();
 
-  const [ipaddress, setIpaddress] = useState('');
-  const [username, setUsername] = useState('');
   const [showConfirmationModal, setShowConfirmationModal] = useState(false);
   const [showSettingsModal, setShowSettingsModal] = useState(false);
   const [showHelpModal, setShowHelpModal] = useState(false);
   const [showAuthModal, setShowAuthModal] = useState(false);
   const [showAdminDashboard, setShowAdminDashboard] = useState(false);
+  const [showMergedVariables, setShowMergedVariables] = useState(false);
+  const [showMergeVariablesModal, setShowMergeVariablesModal] = useState(false);
+  const [hasTokens, setHasTokens] = useState(false);
   const [isFirstUser, setIsFirstUser] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [showTour, setShowTour] = useState(() => {
@@ -71,6 +81,15 @@ export default function App() {
       checkFirstUser();
     }
   }, [authLoading]);
+
+  useEffect(() => {
+    const checker = variables.filter(variable => variable.token.length > 0);
+    setHasTokens(checker.length > 0);
+  }, [variables]);
+
+  useEffect(() => {
+    
+  }, [showMergedVariables]);
 
   const handleLogoClick = () => {
     if (tasks.length > 0) {
@@ -120,9 +139,11 @@ export default function App() {
     return false;
   };
 
-  const mergeData = (e) => {
-    e.preventDefault();
-    console.log(ipaddress, username);
+  const handleMergeVariables = () => {
+    setVariables(variables)
+    setShowMergeVariablesModal(false);
+    setShowMergedVariables(!showMergedVariables);
+    console.log("editVariable", variables)
   }
 
   if (showAdminDashboard && isAdmin) {
@@ -153,6 +174,7 @@ export default function App() {
             onSettingsClick={() => setShowSettingsModal(true)}
             onAdminClick={() => setShowAdminDashboard(true)}
             tasks={tasks}
+            variables={variables}
             onImport={setTasks}
             isAdmin={isAdmin}
             onError={setError}
@@ -171,24 +193,28 @@ export default function App() {
           googleApiKey={settings.googleApiKey}
           onError={setError}
           isAdmin={isAdmin}
-        />
+          />
       </div>
       <div className="px-4 py-12 sm:px-6 lg:px-8 w-[30%]">
-        <div className='mb-2'>
-          <label htmlFor="ipaddress">
-            Ip Address: 
-            <input id="ipaddress" type="text" value={ipaddress} onChange={(e) => setIpaddress(e.target.value)} />
-          </label>
-        </div>
-        <div className='mb-2'>
-          <label htmlFor="username">
-            Username: 
-            <input id="username" type="text" value={username} onChange={(e) => setUsername(e.target.value)} />
-          </label>
-        </div>
-        <div className='mb-2'>
-          <button onClick={mergeData}>Merge Data Into Tasks</button>
-        </div>
+        <VariableListSection
+          variables={variables}
+          onDeleteVariable={deleteVariable}
+          addVariable={addVariable}
+          editVariable={editVariable}
+        />
+        { variables.length > 0 ? (
+          <div className='mb-2 flex gap-2 justify-end'>
+            <button
+              type="submit"
+              className={`text-white px-4 py-2 my-4 rounded-lg flex items-center gap-2 ${hasTokens ? 'bg-blue-500 hover:bg-blue-600 transition-colors': 'bg-gray-200'}`}
+              onClick={() => setShowMergeVariablesModal(true)}
+              disabled={!hasTokens}
+            >
+              <Merge size={20} />
+              {showMergedVariables ? "Hide Merged Variables" : "Show Merged Variables"}
+            </button>
+          </div>
+        ): ''}
       </div>
     </div>
     <div className="bg-gray-50 relative">
@@ -228,6 +254,14 @@ export default function App() {
         <AuthModal
           onClose={() => setShowAuthModal(false)}
           isFirstUser={isFirstUser}
+        />
+      )}
+      {showMergeVariablesModal && (
+        <MergeVariablesModal
+          variables={variables}
+          onClose={() => setShowMergeVariablesModal(false)}
+          onMerge={handleMergeVariables}
+          editVariable={editVariable}
         />
       )}
     </div>

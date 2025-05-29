@@ -4,6 +4,7 @@ import { Edit2, Trash2, Plus, ArrowLeft, Upload } from 'lucide-react';
 import { ListEditor } from './ListEditor';
 import { SaveImportModal } from '../SaveImportModal';
 import { Task } from '../../types/task';
+import { Variable } from '../../types/variable';
 
 interface AdminDashboardProps {
   onClose: () => void;
@@ -16,6 +17,7 @@ export function AdminDashboard({ onClose, onError }: AdminDashboardProps) {
   const [editingList, setEditingList] = useState<TaskList | null>(null);
   const [showSaveImportModal, setShowSaveImportModal] = useState(false);
   const [tasks, setTasks] = useState<Task[]>([]);
+  const [variables, setVariables] = useState<Variable[]>([]);
   const [saving, setSaving] = useState(false);
   const [isCreating, setIsCreating] = useState(false);
 
@@ -81,7 +83,7 @@ export function AdminDashboard({ onClose, onError }: AdminDashboardProps) {
 
     setSaving(true);
     try {
-      await saveTaskList(name, tasks, isExample);
+      await saveTaskList(name, tasks, variables, isExample);
       onSave();
     } catch (error) {
       console.error('Error saving list:', error);

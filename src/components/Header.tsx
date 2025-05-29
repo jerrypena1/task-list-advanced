@@ -4,18 +4,20 @@ import { Task } from '../types/task';
 import { ExportModal } from './ExportModal';
 import { SaveModal } from './SaveModal';
 import { saveTaskList } from '../services/taskListService';
+import { Variable } from '../types/variable';
 
 interface HeaderProps {
   onLogoClick: () => void;
   onSettingsClick: () => void;
   onAdminClick: () => void;
   tasks: Task[];
+  variables: Variable[];
   onImport: (tasks: Task[]) => void;
   onError: (error: string) => void;
   isAdmin?: boolean;
 }
 
-export function Header({ onLogoClick, onSettingsClick, onAdminClick, tasks, onImport, onError, isAdmin }: HeaderProps) {
+export function Header({ onLogoClick, onSettingsClick, onAdminClick, tasks, variables, onImport, onError, isAdmin }: HeaderProps) {
   const [showExportModal, setShowExportModal] = useState(false);
   const [showSaveModal, setShowSaveModal] = useState(false);
   const [saving, setSaving] = useState(false);
@@ -33,7 +35,7 @@ export function Header({ onLogoClick, onSettingsClick, onAdminClick, tasks, onIm
 
     setSaving(true);
     try {
-      await saveTaskList(name, tasks, false);
+      await saveTaskList(name, tasks, variables, false);
       // onSave();
     } catch (error) {
       console.error('Error saving list:', error);

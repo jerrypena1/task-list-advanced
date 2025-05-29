@@ -1,5 +1,6 @@
 import { supabase } from '../lib/supabase';
 import { Task } from '../types/task';
+import { Variable } from '../types/variable';
 
 export interface TaskList {
   id: string;
@@ -8,9 +9,10 @@ export interface TaskList {
   created_at: string;
   user_id: string | null;
   is_example?: boolean;
+  variables: Variable[];
 }
 
-export async function saveTaskList(name: string, tasks: Task[], isExample = false) {
+export async function saveTaskList(name: string, tasks: Task[], variables: Variable[], isExample = false) {
   // Ensure all tasks are unchecked before saving
   const uncheckedTasks = tasks.map(task => ({
     ...task,
@@ -30,6 +32,7 @@ export async function saveTaskList(name: string, tasks: Task[], isExample = fals
       .from('task_lists')
       .update({
         data: uncheckedTasks,
+        variables: variables,
         is_example: isExample
       })
       .eq('id', existingList.id)
@@ -46,6 +49,7 @@ export async function saveTaskList(name: string, tasks: Task[], isExample = fals
         {
           name,
           data: uncheckedTasks,
+          variables: variables,
           is_example: isExample,
           user_id: isExample ? null : (await supabase.auth.getUser()).data.user?.id
         }
@@ -152,7 +156,7 @@ export async function importExampleList(url: string) {
       throw new Error(`Failed to fetch task list: ${response.statusText}`);
     }
     const data = await response.json();
-    return saveTaskList(data.name, data.data, true);
+    return saveTaskList(data.name, data.data, [], true);
   } catch (error) {
     console.error(`Error importing example list ${url}:`, error);
     throw error;
