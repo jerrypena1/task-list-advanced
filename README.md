@@ -48,6 +48,7 @@ CREATE TABLE IF NOT EXISTS task_lists (
   id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
   name text NOT NULL,
   data jsonb NOT NULL,
+  variables jsonb NOT NULL,
   created_at timestamptz DEFAULT now(),
   user_id uuid REFERENCES auth.users(id),
   is_example boolean DEFAULT false

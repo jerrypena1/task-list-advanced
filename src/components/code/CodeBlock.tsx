@@ -6,6 +6,7 @@ import 'prismjs/components/prism-javascript';
 import 'prismjs/components/prism-typescript';
 import 'prismjs/components/prism-jsx';
 import 'prismjs/components/prism-tsx';
+import { useVariables } from '../../context/variableContext';
 
 interface CodeBlockProps {
   code: string;
@@ -14,14 +15,48 @@ interface CodeBlockProps {
 
 export function CodeBlock({ code, language }: CodeBlockProps) {
   const [copied, setCopied] = useState(false);
+  const [renderedCode, setRenderedCode] = useState(code);
   const timeoutRef = useRef<number>();
+
+
+  const { variables, mergingVariables } = useVariables();
 
   useEffect(() => {
     Prism.highlightAll();
-  }, [code]);
+  }, [renderedCode]);
+
+  useEffect(() => {
+    if (mergingVariables) {
+      setRenderedCode(renderCodeBlockCode(code));
+    } else {
+      setRenderedCode(code);
+    }
+  }, [code, variables]);
+
+  const renderCodeBlockCode = (code: string): string => {
+    function replaceTokenIgnoreCase(input: string, tokenDefinition: {token: string, value: string}): string {
+      const { token, value } = tokenDefinition;
+      // Build a regex to match %%token%% regardless of case
+      const pattern = `%%${token}%%`;
+      const escapedPattern = pattern.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&');
+      const regex = new RegExp(escapedPattern, 'gi');
+      return input.replace(regex, value);
+    }
+
+    let tempCode = code;
+    try {
+      variables.forEach(variable => {
+        tempCode = replaceTokenIgnoreCase(tempCode, variable);
+      })
+      return tempCode;
+    } catch(error) {
+      console.error('ERROR: not able to merge variable tokens for codeblock: ', error);
+      return code;
+    }
+  }
 
   const handleCopy = async () => {
-    await navigator.clipboard.writeText(code);
+    await navigator.clipboard.writeText(renderedCode);
     setCopied(true);
     
     if (timeoutRef.current) {
@@ -36,7 +71,7 @@ export function CodeBlock({ code, language }: CodeBlockProps) {
   return (
     <div className="relative mt-2 group">
       <pre className="rounded-md bg-gray-50 p-4">
-        <code className={`language-${language}`}>{code}</code>
+        <code className={`language-${language}`}>{renderedCode}</code>
       </pre>
       <button
         onClick={handleCopy}

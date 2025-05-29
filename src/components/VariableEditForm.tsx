@@ -1,15 +1,18 @@
 import React, { useState } from 'react';
-import { Variable } from '../types/variable';
+// import { Variable, VariablesContextType } from '../types/variable';
 import { Save } from 'lucide-react';
+import { useVariables, Variable } from '../context/variableContext';
+// import { VariableContext } from '../context/variableContext';
 
 interface VariableEditFormProps {
   variable: Variable;
-  editVariable: (id: string, token: string, value: string) => void;
   setIsEditing: (isEditing: boolean) => void;
 }
 
-export function VariableEditForm({ variable, editVariable, setIsEditing }: VariableEditFormProps) {
+export function VariableEditForm({ variable, setIsEditing }: VariableEditFormProps) {
   const [token, setToken] = useState(variable.token);
+
+  const { editVariable } = useVariables();
 
   return (
     <div className="p-4 bg-white rounded-lg shadow-sm">

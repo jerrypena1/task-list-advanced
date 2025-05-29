@@ -4,24 +4,27 @@ import { Task } from '../types/task';
 import { ExportModal } from './ExportModal';
 import { SaveModal } from './SaveModal';
 import { saveTaskList } from '../services/taskListService';
-import { Variable } from '../types/variable';
+import { useVariables } from '../context/variableContext';
+// import { VariableContext } from '../context/variableContext';
+// import { VariablesContextType } from '../types/variable';
 
 interface HeaderProps {
   onLogoClick: () => void;
   onSettingsClick: () => void;
   onAdminClick: () => void;
   tasks: Task[];
-  variables: Variable[];
   onImport: (tasks: Task[]) => void;
   onError: (error: string) => void;
   isAdmin?: boolean;
 }
 
-export function Header({ onLogoClick, onSettingsClick, onAdminClick, tasks, variables, onImport, onError, isAdmin }: HeaderProps) {
+export function Header({ onLogoClick, onSettingsClick, onAdminClick, tasks, onImport, onError, isAdmin }: HeaderProps) {
   const [showExportModal, setShowExportModal] = useState(false);
   const [showSaveModal, setShowSaveModal] = useState(false);
   const [saving, setSaving] = useState(false);
   
+  const { variables } = useVariables();
+
   const handleSave = async (name: string) => {
     if (!name.trim()) {
       onError('Please enter a name for the list');

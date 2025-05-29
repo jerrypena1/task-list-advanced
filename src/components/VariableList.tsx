@@ -1,14 +1,12 @@
 import React from 'react';
-import { Variable } from '../types/variable';
 import { VariableItem } from './VariableItem';
+import { useVariables } from '../context/variableContext';
+// import { VariableContext } from '../context/variableContext';
+// import { VariablesContextType } from '../types/variable';
 
-interface VariableListProps {
-  variables: Variable[];
-  onDeleteVariable: (id: string) => void;
-  editVariable: (id: string, token: string, value: string) => void;
-}
+export function VariableList() {
 
-export function VariableList({ variables, onDeleteVariable, editVariable }: VariableListProps) {
+  const { variables } = useVariables();
 
   return (
     <div>
@@ -17,8 +15,6 @@ export function VariableList({ variables, onDeleteVariable, editVariable }: Vari
             <VariableItem
               key={variable.id}
               variable={variable}
-              onDeleteVariable={onDeleteVariable}
-              editVariable={editVariable}
             />
           ))}
         </div>

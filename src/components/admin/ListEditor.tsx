@@ -4,7 +4,9 @@ import { TaskInput } from '../TaskInput';
 import { TaskList } from '../TaskList';
 import { Task } from '../../types/task';
 import { saveTaskList } from '../../services/taskListService';
-import { Variable } from '../../types/variable';
+import { useVariables, Variable } from '../../context/variableContext';
+// import { Variable, VariablesContextType } from '../../types/variable';
+// import { VariableContext } from '../../context/variableContext';
 
 interface ListEditorProps {
   list?: {
@@ -22,9 +24,12 @@ interface ListEditorProps {
 export function ListEditor({ list, onSave, onCancel, onError }: ListEditorProps) {
   const [name, setName] = useState(list?.name || '');
   const [tasks, setTasks] = useState<Task[]>(list?.data || []);
-  const [variables, setVariables] = useState<Variable[]>(list?.variables || []);
   const [isExample, setIsExample] = useState(list?.is_example || false);
   const [saving, setSaving] = useState(false);
+
+  const { variables, setVariables } = useVariables();
+
+  setVariables(list?.variables || []);
 
   const handleSave = async () => {
     if (!name.trim()) {

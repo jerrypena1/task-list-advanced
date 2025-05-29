@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { Variable } from '../types/variable';
 
 interface VariableDisplayProps {

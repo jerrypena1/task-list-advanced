@@ -1,21 +1,13 @@
-import React, { useEffect } from 'react';
-import { Variable } from '../types/variable';
+import React from 'react';
 import { VariableList } from './VariableList';
 import { PlusCircle } from 'lucide-react';
+import { useVariables } from '../context/variableContext';
+// import { VariableContext } from '../context/variableContext';
+// import { VariablesContextType } from '../types/variable';
 
-interface VariableListSectionProps {
-  variables: Variable[];
-  onDeleteVariable: (id: string) => void;
-  addVariable: (token: string, value: string) => void;
-  editVariable: (id: string, token: string, value: string) => void;
-}
+export function VariableListSection() {
 
-export function VariableListSection({
-  variables,
-  onDeleteVariable,
-  addVariable,
-  editVariable,
-}: VariableListSectionProps) {
+  const { variables, addVariable } = useVariables();
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -25,7 +17,7 @@ export function VariableListSection({
   return (
     <>
       <div className="flex justify-between">
-        <div>
+        <div className="mb-2">
           <h3 className="font-semibold text-gray-800 mb-2">Token Variables</h3>
           <p className="text-gray-500">Manage your variables here.</p>
         </div>
@@ -43,11 +35,7 @@ export function VariableListSection({
         </form>
       </div>
       {variables.length > 0 ? (
-        <VariableList
-          variables={variables}
-          onDeleteVariable={onDeleteVariable}
-          editVariable={editVariable}
-        />
+        <VariableList />
       ): ''}
     </>
   );

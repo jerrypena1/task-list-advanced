@@ -1,19 +1,20 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { X } from 'lucide-react';
-import { Variable } from '../types/variable';
+import { useVariables } from '../context/variableContext';
 import { MergeVariableEditForm } from './MergeVariableEditForm';
+// import VariableContext from '../context/variableContext';
 
 interface MergeVariablesModalProps {
-  variables: Variable[];
-  editVariable: (id: string, token: string, value: string) => void;
   onClose: () => void;
   onMerge: () => void;
 }
 
-export function MergeVariablesModal({ variables, editVariable, onClose, onMerge }: MergeVariablesModalProps) {
+export function MergeVariablesModal({ onClose, onMerge }: MergeVariablesModalProps) {
   const modalRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
   const [hasValues, setHasValues] = useState(false);
+
+  const { variables } = useVariables();
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -55,7 +56,7 @@ export function MergeVariablesModal({ variables, editVariable, onClose, onMerge 
         <form onSubmit={handleSubmit}>
           <div className="mb-4">
             {variables.filter(variable => variable.token.length > 0).map(variable => (
-              <MergeVariableEditForm key={variable.id} variable={variable} editVariable={editVariable} />
+              <MergeVariableEditForm key={variable.id} variable={variable} />
             ))}
           </div>
           <div className="flex justify-end gap-2">

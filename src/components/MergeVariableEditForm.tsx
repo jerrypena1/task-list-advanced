@@ -1,13 +1,15 @@
 import React, { useEffect, useState } from 'react';
-import { Variable } from '../types/variable';
+// import { Variable } from '../types/variable';
+import { useVariables, Variable } from '../context/variableContext';
 
 interface MergeVariableEditFormProps {
   variable: Variable;
-  editVariable: (id: string, token: string, value: string) => void;
 }
 
-export function MergeVariableEditForm({ variable, editVariable }: MergeVariableEditFormProps) {
+export function MergeVariableEditForm({ variable }: MergeVariableEditFormProps) {
   const [value, setValue] = useState(variable.value);
+
+  const { editVariable } = useVariables();
 
   useEffect(() => {
     editVariable(variable.id, variable.token, value);

@@ -1,17 +1,18 @@
 import React, { useState } from 'react';
 import { Copy, Edit2, Trash2 } from 'lucide-react';
-import { Variable } from '../types/variable';
+// import { Variable, VariablesContextType } from '../types/variable';
 import { VariableEditForm } from './VariableEditForm';
 import { VariableDisplay } from './VariableDisplay';
+import { useVariables, Variable } from '../context/variableContext';
 
 interface VariableItemProps {
   variable: Variable;
-  onDeleteVariable: (id: string) => void;
-  editVariable: (id: string, token: string, value: string) => void;
 }
 
-export function VariableItem({ variable, onDeleteVariable, editVariable }: VariableItemProps) { 
+export function VariableItem({ variable }: VariableItemProps) { 
   const [isEditing, setIsEditing] = useState(false);
+
+  const { deleteVariable } = useVariables();
 
   const handleCopy = async () => {
     await navigator.clipboard.writeText(variable.token.length ? `%%${variable.token}%%` : '');
@@ -23,7 +24,7 @@ export function VariableItem({ variable, onDeleteVariable, editVariable }: Varia
         <div className="flex-1 overflow-x-auto">
           <div className="flex items-center gap-2">
             {isEditing ? (
-              <VariableEditForm variable={variable} editVariable={editVariable} setIsEditing={setIsEditing} />
+              <VariableEditForm variable={variable} setIsEditing={setIsEditing} />
             ): (
               <VariableDisplay variable={variable} handleCopy={handleCopy} />
             )}
@@ -50,7 +51,7 @@ export function VariableItem({ variable, onDeleteVariable, editVariable }: Varia
             </button>
           )}
           <button
-              onClick={() => onDeleteVariable(variable.id)}
+              onClick={() => deleteVariable(variable.id)}
               className="text-gray-400 hover:text-red-500 transition-colors"
             >
               <Trash2 size={18} />

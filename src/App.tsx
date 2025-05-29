@@ -19,7 +19,9 @@ import { AdminDashboard } from './components/admin/AdminDashboard';
 import { supabase } from './lib/supabase';
 import { Task } from './types/task';
 import { MergeVariablesModal } from './components/MergeVariablesModal';
-import { Variable } from './types/variable';
+import { useVariables, VariableProvider } from './context/variableContext';
+// import VariableProvider, { VariableContext} from './context/variableContext';
+// import { VariablesContextType } from './types/variable';
 
 export default function App() {
   const [settings, setSettings] = useSettings();
@@ -32,11 +34,6 @@ export default function App() {
     toggleTask,
     deleteTask,
     editTask,
-    variables,
-    setVariables,
-    addVariable,
-    deleteVariable,
-    editVariable,
     reorderTasks
   } = useTasks();
 
@@ -45,7 +42,6 @@ export default function App() {
   const [showHelpModal, setShowHelpModal] = useState(false);
   const [showAuthModal, setShowAuthModal] = useState(false);
   const [showAdminDashboard, setShowAdminDashboard] = useState(false);
-  const [showMergedVariables, setShowMergedVariables] = useState(false);
   const [showMergeVariablesModal, setShowMergeVariablesModal] = useState(false);
   const [hasTokens, setHasTokens] = useState(false);
   const [isFirstUser, setIsFirstUser] = useState(false);
@@ -54,6 +50,8 @@ export default function App() {
     const hasSeenTour = sessionStorage.getItem('hasSeenTour');
     return !hasSeenTour && !settings.googleApiKey;
   });
+
+  const { variables, setVariables, mergingVariables, setMergingVariables } = useVariables();
 
   useEffect(() => {
     // Check if this is the first user
@@ -89,7 +87,7 @@ export default function App() {
 
   useEffect(() => {
     
-  }, [showMergedVariables]);
+  }, [mergingVariables]);
 
   const handleLogoClick = () => {
     if (tasks.length > 0) {
@@ -142,8 +140,9 @@ export default function App() {
   const handleMergeVariables = () => {
     setVariables(variables)
     setShowMergeVariablesModal(false);
-    setShowMergedVariables(!showMergedVariables);
-    console.log("editVariable", variables)
+    setMergingVariables(!mergingVariables);
+    console.log("editVariable", variables);
+    // TODO show merged token variables in codeblocks
   }
 
   if (showAdminDashboard && isAdmin) {
@@ -157,6 +156,15 @@ export default function App() {
         }}
       />
     );
+  }
+
+  const handleMergeVariableTrigger = () => {
+    if (mergingVariables) {
+      setMergingVariables(false);
+      // TODO remove showing the merged token variables in codeblocks
+    } else {
+      setShowMergeVariablesModal(true);
+    }
   }
 
   return (
@@ -174,7 +182,6 @@ export default function App() {
             onSettingsClick={() => setShowSettingsModal(true)}
             onAdminClick={() => setShowAdminDashboard(true)}
             tasks={tasks}
-            variables={variables}
             onImport={setTasks}
             isAdmin={isAdmin}
             onError={setError}
@@ -193,25 +200,20 @@ export default function App() {
           googleApiKey={settings.googleApiKey}
           onError={setError}
           isAdmin={isAdmin}
-          />
+        />
       </div>
       <div className="px-4 py-12 sm:px-6 lg:px-8 w-[30%]">
-        <VariableListSection
-          variables={variables}
-          onDeleteVariable={deleteVariable}
-          addVariable={addVariable}
-          editVariable={editVariable}
-        />
-        { variables.length > 0 ? (
+        <VariableListSection />
+        { variables?.length > 0 ? (
           <div className='mb-2 flex gap-2 justify-end'>
             <button
               type="submit"
               className={`text-white px-4 py-2 my-4 rounded-lg flex items-center gap-2 ${hasTokens ? 'bg-blue-500 hover:bg-blue-600 transition-colors': 'bg-gray-200'}`}
-              onClick={() => setShowMergeVariablesModal(true)}
+              onClick={handleMergeVariableTrigger}
               disabled={!hasTokens}
             >
               <Merge size={20} />
-              {showMergedVariables ? "Hide Merged Variables" : "Show Merged Variables"}
+              {mergingVariables ? "Hide Merged Variables" : "Show Merged Variables"}
             </button>
           </div>
         ): ''}
@@ -258,10 +260,8 @@ export default function App() {
       )}
       {showMergeVariablesModal && (
         <MergeVariablesModal
-          variables={variables}
           onClose={() => setShowMergeVariablesModal(false)}
           onMerge={handleMergeVariables}
-          editVariable={editVariable}
         />
       )}
     </div>
