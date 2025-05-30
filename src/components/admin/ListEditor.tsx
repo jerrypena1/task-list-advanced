@@ -61,6 +61,9 @@ export function ListEditor({ list, onSave, onCancel, onError }: ListEditorProps)
 
     setSaving(true);
     try {
+      // TODO 
+      console.log('name', name);
+
       await saveTaskList(name, tasks, variables, isExample);
       onSave();
     } catch (error) {
@@ -203,7 +206,7 @@ export function ListEditor({ list, onSave, onCancel, onError }: ListEditorProps)
           <div className="bg-white rounded-lg shadow">
             <div className="p-6 border-b">
               <div className="flex items-center justify-between">
-                <div className="flex items-center gap-4">
+                <div className="flex items-center gap-4 flex-grow">
                   <button
                     onClick={onCancel}
                     className="text-gray-400 hover:text-gray-600 transition-colors"
@@ -216,7 +219,7 @@ export function ListEditor({ list, onSave, onCancel, onError }: ListEditorProps)
                     value={name}
                     onChange={(e) => setName(e.target.value)}
                     placeholder="Enter list name"
-                    className="text-2xl font-semibold text-gray-900 border-none focus:outline-none focus:ring-0 bg-transparent"
+                    className="inline-block text-2xl font-semibold text-gray-900 focus:outline-none focus:ring-0 bg-transparent border w-full"
                   />
                 </div>
                 <div className="flex items-center gap-4">
