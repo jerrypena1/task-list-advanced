@@ -2,10 +2,11 @@ import React, { useState } from 'react';
 import { Send, Paperclip } from 'lucide-react';
 import { generateTasks } from '../services/aiService';
 import { ChatMessage } from '../types/chat';
+import { Variable } from '../types/variable';
 
 interface AITaskGeneratorProps {
   apiKey: string;
-  onTasksGenerated: (tasks: any[]) => void;
+  onTasksGenerated: (tasks: any[], variables: Variable[]) => void;
   onError: (error: string) => void;
 }
 
@@ -78,7 +79,7 @@ export function AITaskGenerator({ apiKey, onTasksGenerated, onError }: AITaskGen
               createdAt: new Date(task.createdAt || new Date()),
               id: task.id || crypto.randomUUID()
             }));
-            onTasksGenerated(newTasks);
+            onTasksGenerated(newTasks, parsedData.data.variables);
             setChatInput('');
             setSelectedFile(null);
             setSelectedFileName(null);

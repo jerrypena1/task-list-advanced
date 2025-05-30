@@ -3,13 +3,14 @@ import { X } from 'lucide-react';
 
 interface SaveModalProps {
   onClose: () => void;
-  onSave: (name: string) => void;
+  onSave: (name: string, isExample: boolean) => void;
 }
 
 export function SaveModal({ onClose, onSave }: SaveModalProps) {
   const [name, setName] = useState('');
   const modalRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
+  const [isExample, setIsExample] = useState(false);
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -29,7 +30,7 @@ export function SaveModal({ onClose, onSave }: SaveModalProps) {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (name.trim()) {
-      onSave(name.trim());
+      onSave(name.trim(), isExample);
       onClose();
     }
   };
@@ -60,6 +61,15 @@ export function SaveModal({ onClose, onSave }: SaveModalProps) {
             />
           </div>
           <div className="flex justify-end gap-2">
+          <label className="flex items-center gap-2">
+              <input
+                type="checkbox"
+                checked={isExample}
+                onChange={(e) => setIsExample(e.target.checked)}
+                className="w-4 h-4 text-blue-500 border-gray-300 rounded focus:ring-blue-500"
+              />
+              <span className="text-sm text-gray-700">Save as example</span>
+            </label>  
             <button
               type="button"
               onClick={onClose}

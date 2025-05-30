@@ -1,9 +1,10 @@
 import React from 'react';
 import { Task } from '../types/task';
+import { Variable } from '../types/variable';
 
 interface TaskListSelectorProps {
-  exampleLists: { name: string; data: Task[] }[];
-  onImportTaskList: (tasks: Task[]) => void;
+  exampleLists: { name: string; data: Task[]; variables: Variable[] }[];
+  onImportTaskList: (tasks: Task[], variables: Variable[]) => void;
 }
 
 export function TaskListSelector({
@@ -15,7 +16,9 @@ export function TaskListSelector({
       {exampleLists.map((list) => (
         <button
           key={list.name}
-          onClick={() => onImportTaskList(list.data)}
+          onClick={() => {
+            onImportTaskList(list.data, list.variables)
+          }}
           className="px-3 py-1.5 text-sm bg-white text-gray-700 rounded-md border border-gray-200 
             hover:border-gray-300 hover:bg-gray-50 transition-all duration-200 
             shadow-sm hover:shadow"

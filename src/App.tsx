@@ -19,9 +19,8 @@ import { AdminDashboard } from './components/admin/AdminDashboard';
 import { supabase } from './lib/supabase';
 import { Task } from './types/task';
 import { MergeVariablesModal } from './components/MergeVariablesModal';
-import { useVariables, VariableProvider } from './context/variableContext';
-// import VariableProvider, { VariableContext} from './context/variableContext';
-// import { VariablesContextType } from './types/variable';
+import { useVariables, Variable } from './context/variableContext';
+import { ImportDataType } from './types/importData';
 
 export default function App() {
   const [settings, setSettings] = useSettings();
@@ -141,19 +140,18 @@ export default function App() {
     setVariables(variables)
     setShowMergeVariablesModal(false);
     setMergingVariables(!mergingVariables);
-    console.log("editVariable", variables);
-    // TODO show merged token variables in codeblocks
   }
+
+  const handleClearAll = () => {
+    setTasks([]);
+    setVariables([]);
+  }  
 
   if (showAdminDashboard && isAdmin) {
     return (
       <AdminDashboard 
         onClose={() => setShowAdminDashboard(false)}
         onError={setError}
-        onEditList={(list) => {
-          setTasks(list.data);
-          setShowAdminDashboard(false);
-        }}
       />
     );
   }
@@ -161,10 +159,29 @@ export default function App() {
   const handleMergeVariableTrigger = () => {
     if (mergingVariables) {
       setMergingVariables(false);
-      // TODO remove showing the merged token variables in codeblocks
     } else {
       setShowMergeVariablesModal(true);
     }
+  }
+
+  const isImportDataType = (data: any): data is ImportDataType => {
+    return Array.isArray(data.tasks) && Array.isArray(data.variables);
+  };
+  
+  const handleOnImport = (data: ImportDataType | Task[]) => {
+    if (isImportDataType(data)) {
+      setTasks(data.tasks);
+      setVariables(data.variables);
+    } else {
+      setTasks(data);
+      setVariables([]);
+    }
+    setMergingVariables(false);
+  };
+
+  const handleImportTaskList = (tasks: Task[], variables: Variable[]) => {
+    setTasks(tasks);
+    setVariables(variables);
   }
 
   return (
@@ -182,9 +199,10 @@ export default function App() {
             onSettingsClick={() => setShowSettingsModal(true)}
             onAdminClick={() => setShowAdminDashboard(true)}
             tasks={tasks}
-            onImport={setTasks}
-            isAdmin={isAdmin}
+            onImport={handleOnImport}
             onError={setError}
+            onClear={handleClearAll}
+            isAdmin={isAdmin}
           />
           <TaskInput onAddTask={addTask} />
         </div>
@@ -196,13 +214,13 @@ export default function App() {
           onDuplicate={duplicateTask}
           onReorder={reorderTasks}
           onCheckAllSubTasks={checkAllSubTasks}
-          onImportTaskList={setTasks}
+          onImportTaskList={handleImportTaskList}
           googleApiKey={settings.googleApiKey}
           onError={setError}
           isAdmin={isAdmin}
         />
       </div>
-      <div className="px-4 py-12 sm:px-6 lg:px-8 w-[30%]">
+      <div className="px-4 py-12 sm:px-6 lg:px-8 w-[30%] sticky top-0 self-start">
         <VariableListSection />
         { variables?.length > 0 ? (
           <div className='mb-2 flex gap-2 justify-end'>

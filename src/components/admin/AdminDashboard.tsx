@@ -5,6 +5,7 @@ import { ListEditor } from './ListEditor';
 import { SaveImportModal } from '../SaveImportModal';
 import { Task } from '../../types/task';
 import { useVariables } from '../../context/variableContext';
+import { ImportDataType } from '../../types/importData';
 // import { VariablesContextType } from '../../types/variable';
 // import { VariableContext } from '../../context/variableContext';
 
@@ -22,7 +23,7 @@ export function AdminDashboard({ onClose, onError }: AdminDashboardProps) {
   const [saving, setSaving] = useState(false);
   const [isCreating, setIsCreating] = useState(false);
 
-  const { variables } = useVariables();
+  const { variables, setVariables } = useVariables();
 
   useEffect(() => {
     fetchLists();
@@ -45,6 +46,10 @@ export function AdminDashboard({ onClose, onError }: AdminDashboardProps) {
     fetchLists();
   }
 
+  const isImportDataType = (data: any): data is ImportDataType => {
+    return Array.isArray(data.tasks) && Array.isArray(data.variables);
+  };
+
   const handleImport = () => {
     const input = document.createElement('input');
     input.type = 'file';
@@ -59,7 +64,13 @@ export function AdminDashboard({ onClose, onError }: AdminDashboardProps) {
             const content = e.target?.result as string;
             const parsed = JSON.parse(content);
             if (parsed.data) {
-              setTasks(parsed.data);
+              if (isImportDataType(parsed.data)) {
+                setTasks(parsed.data.tasks);
+                setVariables(parsed.data.variables);
+              } else {
+                setTasks(parsed.data);
+                setVariables([]);
+              }
               setShowSaveImportModal(true);
             }
           } catch (error) {
