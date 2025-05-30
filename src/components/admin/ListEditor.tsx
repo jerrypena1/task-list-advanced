@@ -36,6 +36,7 @@ export function ListEditor({ list, onSave, onCancel, onError }: ListEditorProps)
 
   useEffect(() => {
     setVariables(list?.variables || []);
+    setMergingVariables(false);
   }, []);
 
   useEffect(() => {

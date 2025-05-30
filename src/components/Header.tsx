@@ -23,7 +23,7 @@ export function Header({ onLogoClick, onSettingsClick, onAdminClick, tasks, onIm
   const [showSaveModal, setShowSaveModal] = useState(false);
   const [saving, setSaving] = useState(false);
   
-  const { variables } = useVariables();
+  const { variables, setMergingVariables } = useVariables();
 
   const handleSave = async (name: string, isExample: boolean) => {
     if (!name.trim()) {
@@ -75,6 +75,7 @@ export function Header({ onLogoClick, onSettingsClick, onAdminClick, tasks, onIm
             if (parsed.data) {
               onImport(parsed.data);
             }
+            setMergingVariables(false);
           } catch (error) {
             console.error('Error parsing imported file:', error);
           }

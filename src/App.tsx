@@ -145,6 +145,7 @@ export default function App() {
   const handleClearAll = () => {
     setTasks([]);
     setVariables([]);
+    setMergingVariables(false);
   }  
 
   if (showAdminDashboard && isAdmin) {
