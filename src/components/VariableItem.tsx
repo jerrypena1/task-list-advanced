@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import { Copy, Edit2, Trash2 } from 'lucide-react';
-// import { Variable, VariablesContextType } from '../types/variable';
 import { VariableEditForm } from './VariableEditForm';
 import { VariableDisplay } from './VariableDisplay';
 import { useVariables, Variable } from '../context/variableContext';
@@ -36,7 +35,7 @@ export function VariableItem({ variable }: VariableItemProps) {
             <button
                 onClick={handleCopy}
                 className="text-gray-400 hover:text-blue-500 transition-colors"
-                title="Duplicate task"
+                title="Copy token"
               >
                 <Copy size={18} />
             </button>
@@ -45,7 +44,7 @@ export function VariableItem({ variable }: VariableItemProps) {
             <button
               onClick={() => setIsEditing(!isEditing)}
               className="text-gray-400 hover:text-blue-500 transition-colors"
-              title="Edit list"
+              title="Edit token"
             >
               <Edit2 size={16} />
             </button>

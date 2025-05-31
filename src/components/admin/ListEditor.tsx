@@ -8,8 +8,6 @@ import { useVariables, Variable } from '../../context/variableContext';
 import { VariableListSection } from '../VariableListSection';
 import { MergeVariablesModal } from '../MergeVariablesModal';
 import { ImportDataType } from '../../types/importData';
-// import { Variable, VariablesContextType } from '../../types/variable';
-// import { VariableContext } from '../../context/variableContext';
 
 interface ListEditorProps {
   list?: {

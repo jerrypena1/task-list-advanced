@@ -46,9 +46,9 @@ export function MergeVariablesModal({ onClose, onMerge }: MergeVariablesModalPro
 
   return (
     <div className="fixed inset-0 z-10 flex items-center justify-center bg-black bg-opacity-50">
-      <div ref={modalRef} className="bg-white p-6 rounded-lg shadow-lg w-full max-w-md">
+      <div ref={modalRef} className="bg-white p-6 rounded-lg shadow-lg w-full max-w-md max-h-[90vh] overflow-y-auto">
         <div className="flex justify-between items-center mb-4">
-          <h2 className="text-lg font-medium text-gray-900">Set Variable Values</h2>
+          <h2 className="text-lg font-medium text-gray-900">Set Token Variable Values</h2>
           <button onClick={onClose} className="text-gray-400 hover:text-gray-500">
             <X size={20} />
           </button>

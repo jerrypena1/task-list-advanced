@@ -1,8 +1,6 @@
 import React from 'react';
 import { VariableItem } from './VariableItem';
 import { useVariables } from '../context/variableContext';
-// import { VariableContext } from '../context/variableContext';
-// import { VariablesContextType } from '../types/variable';
 
 export function VariableList() {
 

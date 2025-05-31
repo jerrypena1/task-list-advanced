@@ -12,15 +12,20 @@ export function MergeVariableEditForm({ variable }: MergeVariableEditFormProps) 
   const { editVariable } = useVariables();
 
   useEffect(() => {
-    editVariable(variable.id, variable.token, value);
+    editVariable(variable.id, variable.token, value, variable.description);
   }, [value]);
 
   return (
     <div className="p-4 bg-white rounded-lg shadow-sm">
       <div className="space-y-3">
         <div className="flex flex-wrap gap-2">
-            Token: %%{variable.token}%%
+            <strong>Token:</strong> %%{variable.token}%%
         </div>
+        { variable.description && (
+          <div className="flex flex-wrap gap-2 text-xs">
+              <strong>Description:</strong> {variable.description}
+          </div>
+        )}
         <div className="flex flex-wrap gap-2">
           <label>
             Value:

@@ -2,8 +2,6 @@ import React from 'react';
 import { VariableList } from './VariableList';
 import { PlusCircle } from 'lucide-react';
 import { useVariables } from '../context/variableContext';
-// import { VariableContext } from '../context/variableContext';
-// import { VariablesContextType } from '../types/variable';
 
 export function VariableListSection() {
 
@@ -11,7 +9,7 @@ export function VariableListSection() {
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    addVariable('', '');
+    addVariable('', '', '');
   }
 
   return (
@@ -19,7 +17,7 @@ export function VariableListSection() {
       <div className="flex justify-between">
         <div className="mb-2">
           <h3 className="font-semibold text-gray-800 mb-2">Token Variables</h3>
-          <p className="text-gray-500">Manage your variables here.</p>
+          <p className="text-gray-500">A token is a placeholder you can add to a codeblock for a task. When you merge the tokens, it will allow you to specify a value that will replace the placeholder.</p>
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-3">

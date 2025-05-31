@@ -6,8 +6,6 @@ import { SaveImportModal } from '../SaveImportModal';
 import { Task } from '../../types/task';
 import { useVariables } from '../../context/variableContext';
 import { ImportDataType } from '../../types/importData';
-// import { VariablesContextType } from '../../types/variable';
-// import { VariableContext } from '../../context/variableContext';
 
 interface AdminDashboardProps {
   onClose: () => void;
