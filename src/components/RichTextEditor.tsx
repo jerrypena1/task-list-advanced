@@ -21,14 +21,14 @@ export function RichTextEditor({ value, onChange }: RichTextEditorProps) {
         modules={{
           toolbar: [
             ['bold', 'italic', 'underline', 'strike'],
-            [{ 'header': [2, 3, false] }],
+            [{ 'header': [1, 2, 3, false] }],
             [{ 'list': 'ordered'}, { 'list': 'bullet' }],
             ['link', 'image'],
             ['clean']
           ],
         }}
       />
-      <style jsx global>{`
+      <style>{`
         .rich-text-editor .ql-container {
           min-height: 120px;
           max-height: 400px;

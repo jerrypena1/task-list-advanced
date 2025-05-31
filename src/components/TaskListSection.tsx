@@ -4,6 +4,7 @@ import { TaskList } from './TaskList';
 import { TaskListSelector } from './TaskListSelector';
 import { AITaskGenerator } from './AITaskGenerator';
 import { getExampleLists } from '../services/taskListService';
+import { Variable } from '../types/variable';
 
 interface TaskListSectionProps {
   tasks: Task[];
@@ -13,7 +14,7 @@ interface TaskListSectionProps {
   onDuplicate: (id: string) => void;
   onReorder: (tasks: Task[]) => void;
   onCheckAllSubTasks: (headlineId: string) => void;
-  onImportTaskList: (tasks: Task[]) => void;
+  onImportTaskList: (tasks: Task[], variables: Variable[]) => void;
   googleApiKey?: string;
   onError: (error: string) => void;
   isAdmin: boolean;
@@ -32,7 +33,7 @@ export function TaskListSection({
   onError,
   isAdmin
 }: TaskListSectionProps) {
-  const [exampleLists, setExampleLists] = React.useState<{ name: string; data: Task[] }[]>([]);
+  const [exampleLists, setExampleLists] = React.useState<{ name: string; data: Task[]; variables: Variable[] }[]>([]);
 
   useEffect(() => {
     const fetchExampleLists = async () => {
@@ -40,7 +41,8 @@ export function TaskListSection({
         const lists = await getExampleLists();
         setExampleLists(lists.map(list => ({
           name: list.name,
-          data: list.data
+          data: list.data,
+          variables: list.variables || [],
         })));
       } catch (error) {
         console.error('Error fetching example lists:', error);

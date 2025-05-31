@@ -48,6 +48,7 @@ CREATE TABLE IF NOT EXISTS task_lists (
   id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
   name text NOT NULL,
   data jsonb NOT NULL,
+  variables jsonb NOT NULL,
   created_at timestamptz DEFAULT now(),
   user_id uuid REFERENCES auth.users(id),
   is_example boolean DEFAULT false
@@ -271,6 +272,62 @@ Built with:
 - Google Gemini API for AI features
 - Supabase for database and authentication
 - React Quill for rich text editing
+
+## Production
+
+You should:
+- be logged into the VPS through SSH.
+- have node, npm, and git installed on your machine.
+- you should have pm2 installed globally and running as a systemd service.
+- have the repo cloned onto the server.
+- cd into the cloned repo folder on the server.
+
+Install dependencies
+
+Install dependancies and build the app
+
+```bash
+npm install && npm run build
+```
+
+Run this command to run the app using pm2
+
+```bash
+pm2 start npm --name task-list-advanced -- run preview
+```
+
+Run this command to save and ensure the app runs again when the server reboots
+
+```bash
+pm2 save
+```
+
+### Updated the codebase from the repo
+
+Stop the app
+
+```bash
+pm2 stop task-list-advanced
+```
+
+Update the codebase
+
+```bash
+git pull origin <branch-name>
+```
+
+Install any new dependancies and rebuild the app
+
+```bash
+npm install && npm run build
+```
+
+Restart the app
+
+```bash
+pm2 start task-list-advanced
+```
+
 
 ## See also my Youtube Channel
 URL: https://www.youtube.com/@DIYSmartCode<br><br>

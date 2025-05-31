@@ -1,0 +1,44 @@
+import React, { useEffect, useState } from 'react';
+import { useVariables, Variable } from '../context/variableContext';
+
+interface MergeVariableEditFormProps {
+  variable: Variable;
+}
+
+export function MergeVariableEditForm({ variable }: MergeVariableEditFormProps) {
+  const [value, setValue] = useState(variable.value);
+
+  const { editVariable } = useVariables();
+
+  useEffect(() => {
+    editVariable(variable.id, variable.token, value, variable.description);
+  }, [value]);
+
+  return (
+    <div className="p-4 bg-white rounded-lg shadow-sm">
+      <div className="space-y-3">
+        <div className="flex flex-wrap gap-2">
+            <strong>Token:</strong> %%{variable.token}%%
+        </div>
+        { variable.description && (
+          <div className="flex flex-wrap gap-2 text-xs">
+              <strong>Description:</strong> {variable.description}
+          </div>
+        )}
+        <div className="flex flex-wrap gap-2">
+          <label>
+            Value:
+            <input
+              type="text"
+              value={value}
+              onChange={(e) => {
+                setValue(e.target.value);
+              }}
+              className="flex-1 px-4 py-2 rounded-lg border border-gray-200 focus:outline-none focus:border-blue-500 transition-colors min-w-[200px]"
+            />
+          </label>
+        </div>
+      </div>
+    </div>
+  );
+}

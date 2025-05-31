@@ -6,16 +6,20 @@ import { useAuth } from './hooks/useAuth';
 import { Header } from './components/Header';
 import { TaskInput } from './components/TaskInput';
 import { TaskListSection } from './components/TaskListSection';
+import { VariableListSection } from './components/VariableListSection';
 import { Footer } from './components/Footer';
 import { ConfirmationModal } from './components/ConfirmationModal';
 import { SettingsModal } from './components/SettingsModal';
 import { HelpModal } from './components/HelpModal';
 import { ErrorNotification } from './components/ErrorNotification';
-import { IntroModal } from './components/IntroModal';
+// import { IntroModal } from './components/IntroModal';
 import { Tour } from './components/tour/Tour';
 import { AuthModal } from './components/auth/AuthModal';
 import { AdminDashboard } from './components/admin/AdminDashboard';
 import { supabase } from './lib/supabase';
+import { Task } from './types/task';
+import { useVariables, Variable } from './context/variableContext';
+import { ImportDataType, isImportDataType } from './types/importData';
 
 export default function App() {
   const [settings, setSettings] = useSettings();
@@ -31,8 +35,6 @@ export default function App() {
     reorderTasks
   } = useTasks();
 
-  const [ipaddress, setIpaddress] = useState('');
-  const [username, setUsername] = useState('');
   const [showConfirmationModal, setShowConfirmationModal] = useState(false);
   const [showSettingsModal, setShowSettingsModal] = useState(false);
   const [showHelpModal, setShowHelpModal] = useState(false);
@@ -44,6 +46,8 @@ export default function App() {
     const hasSeenTour = sessionStorage.getItem('hasSeenTour');
     return !hasSeenTour && !settings.googleApiKey;
   });
+
+  const { setVariables, setMergingVariables } = useVariables();
 
   useEffect(() => {
     // Check if this is the first user
@@ -120,22 +124,35 @@ export default function App() {
     return false;
   };
 
-  const mergeData = (e) => {
-    e.preventDefault();
-    console.log(ipaddress, username);
-  }
+  const handleClearAll = () => {
+    setTasks([]);
+    setVariables([]);
+    setMergingVariables(false);
+  }  
 
   if (showAdminDashboard && isAdmin) {
     return (
       <AdminDashboard 
         onClose={() => setShowAdminDashboard(false)}
         onError={setError}
-        onEditList={(list) => {
-          setTasks(list.data);
-          setShowAdminDashboard(false);
-        }}
       />
     );
+  }
+
+  const handleOnImport = (data: ImportDataType | Task[]) => {
+    if (isImportDataType(data)) {
+      setTasks(data.tasks);
+      setVariables(data.variables);
+    } else {
+      setTasks(data);
+      setVariables([]);
+    }
+    setMergingVariables(false);
+  };
+
+  const handleImportTaskList = (tasks: Task[], variables: Variable[]) => {
+    setTasks(tasks);
+    setVariables(variables);
   }
 
   return (
@@ -153,9 +170,10 @@ export default function App() {
             onSettingsClick={() => setShowSettingsModal(true)}
             onAdminClick={() => setShowAdminDashboard(true)}
             tasks={tasks}
-            onImport={setTasks}
-            isAdmin={isAdmin}
+            onImport={handleOnImport}
             onError={setError}
+            onClear={handleClearAll}
+            isAdmin={isAdmin}
           />
           <TaskInput onAddTask={addTask} />
         </div>
@@ -167,28 +185,14 @@ export default function App() {
           onDuplicate={duplicateTask}
           onReorder={reorderTasks}
           onCheckAllSubTasks={checkAllSubTasks}
-          onImportTaskList={setTasks}
+          onImportTaskList={handleImportTaskList}
           googleApiKey={settings.googleApiKey}
           onError={setError}
           isAdmin={isAdmin}
         />
       </div>
-      <div className="px-4 py-12 sm:px-6 lg:px-8 w-[30%]">
-        <div className='mb-2'>
-          <label htmlFor="ipaddress">
-            Ip Address: 
-            <input id="ipaddress" type="text" value={ipaddress} onChange={(e) => setIpaddress(e.target.value)} />
-          </label>
-        </div>
-        <div className='mb-2'>
-          <label htmlFor="username">
-            Username: 
-            <input id="username" type="text" value={username} onChange={(e) => setUsername(e.target.value)} />
-          </label>
-        </div>
-        <div className='mb-2'>
-          <button onClick={mergeData}>Merge Data Into Tasks</button>
-        </div>
+      <div className="px-4 py-12 sm:px-6 lg:px-8 w-[30%] sticky top-0 self-start">
+        <VariableListSection />
       </div>
     </div>
     <div className="bg-gray-50 relative">

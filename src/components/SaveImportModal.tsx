@@ -1,16 +1,17 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { X } from 'lucide-react';
 
-interface SaveModalProps {
+interface SaveImportModalProps {
   onClose: () => void;
   onSave: (name: string, isExample: boolean) => void;
 }
 
-export function SaveModal({ onClose, onSave }: SaveModalProps) {
+export function SaveImportModal({ onClose, onSave }: SaveImportModalProps) {
   const [name, setName] = useState('');
   const modalRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
   const [isExample, setIsExample] = useState(false);
+
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -39,7 +40,7 @@ export function SaveModal({ onClose, onSave }: SaveModalProps) {
     <div className="fixed inset-0 z-10 flex items-center justify-center bg-black bg-opacity-50">
       <div ref={modalRef} className="bg-white p-6 rounded-lg shadow-lg w-full max-w-md">
         <div className="flex justify-between items-center mb-4">
-          <h2 className="text-lg font-medium text-gray-900">Save Task List</h2>
+          <h2 className="text-lg font-medium text-gray-900">Save Task List As...</h2>
           <button onClick={onClose} className="text-gray-400 hover:text-gray-500">
             <X size={20} />
           </button>
@@ -61,7 +62,7 @@ export function SaveModal({ onClose, onSave }: SaveModalProps) {
             />
           </div>
           <div className="flex justify-end gap-2">
-          <label className="flex items-center gap-2">
+            <label className="flex items-center gap-2">
               <input
                 type="checkbox"
                 checked={isExample}
@@ -69,7 +70,7 @@ export function SaveModal({ onClose, onSave }: SaveModalProps) {
                 className="w-4 h-4 text-blue-500 border-gray-300 rounded focus:ring-blue-500"
               />
               <span className="text-sm text-gray-700">Save as example</span>
-            </label>  
+            </label>            
             <button
               type="button"
               onClick={onClose}

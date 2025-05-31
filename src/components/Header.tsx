@@ -1,27 +1,31 @@
 import React, { useState } from 'react';
-import { CheckSquare, Settings, Shield, Download, Save, Upload } from 'lucide-react';
+import { CheckSquare, Settings, Shield, Download, Save, Upload, XSquare } from 'lucide-react';
 import { Task } from '../types/task';
 import { ExportModal } from './ExportModal';
 import { SaveModal } from './SaveModal';
 import { saveTaskList } from '../services/taskListService';
+import { useVariables } from '../context/variableContext';
+import { ImportDataType } from '../types/importData';
 
 interface HeaderProps {
   onLogoClick: () => void;
   onSettingsClick: () => void;
   onAdminClick: () => void;
   tasks: Task[];
-  onImport: (tasks: Task[]) => void;
+  onImport: (data: ImportDataType) => void;
   onError: (error: string) => void;
+  onClear: () => void;
   isAdmin?: boolean;
 }
 
-export function Header({ onLogoClick, onSettingsClick, onAdminClick, tasks, onImport, onError, isAdmin }: HeaderProps) {
+export function Header({ onLogoClick, onSettingsClick, onAdminClick, tasks, onImport, onError, onClear, isAdmin }: HeaderProps) {
   const [showExportModal, setShowExportModal] = useState(false);
   const [showSaveModal, setShowSaveModal] = useState(false);
   const [saving, setSaving] = useState(false);
-  const [name, setName] = useState('');
   
-  const handleSave = async (name: string) => {
+  const { variables, setMergingVariables } = useVariables();
+
+  const handleSave = async (name: string, isExample: boolean) => {
     if (!name.trim()) {
       onError('Please enter a name for the list');
       return;
@@ -34,7 +38,7 @@ export function Header({ onLogoClick, onSettingsClick, onAdminClick, tasks, onIm
 
     setSaving(true);
     try {
-      await saveTaskList(name, tasks, false);
+      await saveTaskList(name, tasks, variables, isExample);
       // onSave();
     } catch (error) {
       console.error('Error saving list:', error);
@@ -45,7 +49,7 @@ export function Header({ onLogoClick, onSettingsClick, onAdminClick, tasks, onIm
   };
 
   const handleExport = (name: string) => {
-    const dataStr = JSON.stringify({ name, data: tasks }, null, 2);
+    const dataStr = JSON.stringify({ name, data: { tasks, variables } }, null, 2);
     const dataUri = 'data:application/json;charset=utf-8,' + encodeURIComponent(dataStr);
     
     const sanitizedName = name.replace(/[^a-z0-9]/gi, '_').toLowerCase();
@@ -71,6 +75,7 @@ export function Header({ onLogoClick, onSettingsClick, onAdminClick, tasks, onIm
             if (parsed.data) {
               onImport(parsed.data);
             }
+            setMergingVariables(false);
           } catch (error) {
             console.error('Error parsing imported file:', error);
           }
@@ -90,17 +95,7 @@ export function Header({ onLogoClick, onSettingsClick, onAdminClick, tasks, onIm
       </div>
       <div className="flex items-center gap-2">
         <div className="import-export-buttons flex gap-2">
-          {isAdmin && (
-            <button
-              onClick={() => setShowSaveModal(true)}
-              disabled={saving || tasks.length === 0}
-              className="flex items-center gap-2 px-4 py-2 text-sm bg-blue-500 text-white rounded-md hover:bg-blue-600 transition-colors disabled:opacity-50"
-              title="Save Tasks"
-            >
-              <Save size={16} />
-              {saving ? 'Saving...' : 'Save List'}
-            </button>
-          )}
+
           <button
             onClick={() => setShowExportModal(true)}
             className="import-export-button flex items-center gap-2 px-3 py-2 text-sm text-gray-600 hover:text-gray-900 transition-colors"
@@ -116,6 +111,26 @@ export function Header({ onLogoClick, onSettingsClick, onAdminClick, tasks, onIm
           >
             <Upload size={16} />
             Import
+          </button>
+          {isAdmin && (
+            <button
+              onClick={() => setShowSaveModal(true)}
+              disabled={saving || tasks.length === 0}
+              className="flex items-center gap-2 px-4 py-2 text-sm bg-blue-500 text-white rounded-md hover:bg-blue-600 transition-colors disabled:opacity-50"
+              title="Save Tasks"
+            >
+              <Save size={16} />
+              {saving ? 'Saving...' : 'Save List'}
+            </button>
+          )}
+          <button
+            onClick={onClear}
+            className="flex items-center gap-2 px-4 py-2 text-sm bg-blue-500 text-white rounded-md hover:bg-blue-600 transition-colors disabled:opacity-50"
+            title="Clear all tasks & variables"
+            disabled={!tasks.length && !variables.length}
+          >
+            <XSquare size={16} />
+            Clear all
           </button>
         </div>
         {isAdmin && (
