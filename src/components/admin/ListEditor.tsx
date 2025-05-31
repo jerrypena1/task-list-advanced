@@ -1,13 +1,12 @@
 import React, { useEffect, useState } from 'react';
-import { ArrowLeft, Merge, Save, Upload, XSquare } from 'lucide-react';
+import { ArrowLeft, Save, Upload, XSquare } from 'lucide-react';
 import { TaskInput } from '../TaskInput';
 import { TaskList } from '../TaskList';
 import { Task } from '../../types/task';
 import { saveTaskList } from '../../services/taskListService';
 import { useVariables, Variable } from '../../context/variableContext';
 import { VariableListSection } from '../VariableListSection';
-import { MergeVariablesModal } from '../MergeVariablesModal';
-import { ImportDataType } from '../../types/importData';
+import { isImportDataType } from '../../types/importData';
 
 interface ListEditorProps {
   list?: {
@@ -27,24 +26,13 @@ export function ListEditor({ list, onSave, onCancel, onError }: ListEditorProps)
   const [tasks, setTasks] = useState<Task[]>(list?.data || []);
   const [isExample, setIsExample] = useState(list?.is_example || false);
   const [saving, setSaving] = useState(false);
-  const [hasTokens, setHasTokens] = useState(false);
-  const [showMergeVariablesModal, setShowMergeVariablesModal] = useState(false);
 
-  const { variables, setVariables, mergingVariables, setMergingVariables } = useVariables();
+  const { variables, setVariables, setMergingVariables } = useVariables();
 
   useEffect(() => {
     setVariables(list?.variables || []);
     setMergingVariables(false);
   }, []);
-
-  useEffect(() => {
-    const checker = variables.filter(variable => variable.token.length > 0);
-    setHasTokens(checker.length > 0);
-  }, [variables]);
-
-  useEffect(() => {
-    
-  }, [mergingVariables]);
 
   const handleSave = async () => {
     if (!name.trim()) {
@@ -136,10 +124,6 @@ export function ListEditor({ list, onSave, onCancel, onError }: ListEditorProps)
     setTasks(newTasks);
   };
 
-  const isImportDataType = (data: any): data is ImportDataType => {
-    return Array.isArray(data.tasks) && Array.isArray(data.variables);
-  };
-
   const handleImport = () => {
     const input = document.createElement('input');
     input.type = 'file';
@@ -174,20 +158,6 @@ export function ListEditor({ list, onSave, onCancel, onError }: ListEditorProps)
     
     input.click();
   };  
-  
-  const handleMergeVariables = () => {
-    setVariables(variables)
-    setShowMergeVariablesModal(false);
-    setMergingVariables(!mergingVariables);
-  }
-
-  const handleMergeVariableTrigger = () => {
-    if (mergingVariables) {
-      setMergingVariables(false);
-    } else {
-      setShowMergeVariablesModal(true);
-    }
-  }
 
   const handleOnClear = () => {
     setVariables([]);
@@ -277,27 +247,8 @@ export function ListEditor({ list, onSave, onCancel, onError }: ListEditorProps)
         </div>
         <div className="px-4 py-12 sm:px-6 lg:px-8 w-[30%] sticky top-0 self-start">
           <VariableListSection />
-          { variables?.length > 0 ? (
-            <div className='mb-2 flex gap-2 justify-end'>
-              <button
-                type="submit"
-                className={`text-white px-4 py-2 my-4 rounded-lg flex items-center gap-2 ${hasTokens ? mergingVariables ? 'bg-orange-600 hover:bg-blue-600 transition-colors': 'bg-blue-500 hover:bg-blue-600 transition-colors': 'bg-gray-200'}`}
-                onClick={handleMergeVariableTrigger}
-                disabled={!hasTokens}
-              >
-                <Merge size={20} />
-                {mergingVariables ? "Disable Merged Variables" : "Show Merged Variables"}
-              </button>
-            </div>
-          ): ''}
         </div>
       </div>
-      {showMergeVariablesModal && (
-        <MergeVariablesModal
-          onClose={() => setShowMergeVariablesModal(false)}
-          onMerge={handleMergeVariables}
-        />
-      )}
     </>
   );
 }

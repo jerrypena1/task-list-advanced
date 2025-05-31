@@ -2,7 +2,6 @@ import React, { useState, useEffect, useRef } from 'react';
 import { X } from 'lucide-react';
 import { useVariables } from '../context/variableContext';
 import { MergeVariableEditForm } from './MergeVariableEditForm';
-// import VariableContext from '../context/variableContext';
 
 interface MergeVariablesModalProps {
   onClose: () => void;

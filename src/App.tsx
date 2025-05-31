@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { HelpCircle, Merge } from 'lucide-react';
+import { HelpCircle } from 'lucide-react';
 import { useSettings } from './hooks/useSettings';
 import { useTasks } from './hooks/useTasks';
 import { useAuth } from './hooks/useAuth';
@@ -18,9 +18,8 @@ import { AuthModal } from './components/auth/AuthModal';
 import { AdminDashboard } from './components/admin/AdminDashboard';
 import { supabase } from './lib/supabase';
 import { Task } from './types/task';
-import { MergeVariablesModal } from './components/MergeVariablesModal';
 import { useVariables, Variable } from './context/variableContext';
-import { ImportDataType } from './types/importData';
+import { ImportDataType, isImportDataType } from './types/importData';
 
 export default function App() {
   const [settings, setSettings] = useSettings();
@@ -41,8 +40,6 @@ export default function App() {
   const [showHelpModal, setShowHelpModal] = useState(false);
   const [showAuthModal, setShowAuthModal] = useState(false);
   const [showAdminDashboard, setShowAdminDashboard] = useState(false);
-  const [showMergeVariablesModal, setShowMergeVariablesModal] = useState(false);
-  const [hasTokens, setHasTokens] = useState(false);
   const [isFirstUser, setIsFirstUser] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [showTour, setShowTour] = useState(() => {
@@ -50,7 +47,7 @@ export default function App() {
     return !hasSeenTour && !settings.googleApiKey;
   });
 
-  const { variables, setVariables, mergingVariables, setMergingVariables } = useVariables();
+  const { setVariables, setMergingVariables } = useVariables();
 
   useEffect(() => {
     // Check if this is the first user
@@ -78,15 +75,6 @@ export default function App() {
       checkFirstUser();
     }
   }, [authLoading]);
-
-  useEffect(() => {
-    const checker = variables.filter(variable => variable.token.length > 0);
-    setHasTokens(checker.length > 0);
-  }, [variables]);
-
-  useEffect(() => {
-    
-  }, [mergingVariables]);
 
   const handleLogoClick = () => {
     if (tasks.length > 0) {
@@ -136,12 +124,6 @@ export default function App() {
     return false;
   };
 
-  const handleMergeVariables = () => {
-    setVariables(variables)
-    setShowMergeVariablesModal(false);
-    setMergingVariables(!mergingVariables);
-  }
-
   const handleClearAll = () => {
     setTasks([]);
     setVariables([]);
@@ -157,18 +139,6 @@ export default function App() {
     );
   }
 
-  const handleMergeVariableTrigger = () => {
-    if (mergingVariables) {
-      setMergingVariables(false);
-    } else {
-      setShowMergeVariablesModal(true);
-    }
-  }
-
-  const isImportDataType = (data: any): data is ImportDataType => {
-    return Array.isArray(data.tasks) && Array.isArray(data.variables);
-  };
-  
   const handleOnImport = (data: ImportDataType | Task[]) => {
     if (isImportDataType(data)) {
       setTasks(data.tasks);
@@ -223,19 +193,6 @@ export default function App() {
       </div>
       <div className="px-4 py-12 sm:px-6 lg:px-8 w-[30%] sticky top-0 self-start">
         <VariableListSection />
-        { variables?.length > 0 ? (
-          <div className='mb-2 flex gap-2 justify-end'>
-            <button
-              type="submit"
-              className={`text-white px-4 py-2 my-4 rounded-lg flex items-center gap-2 ${hasTokens ? mergingVariables ? 'bg-orange-600 hover:bg-blue-600 transition-colors': 'bg-blue-500 hover:bg-blue-600 transition-colors': 'bg-gray-200'}`}
-              onClick={handleMergeVariableTrigger}
-              disabled={!hasTokens}
-            >
-              <Merge size={20} />
-              {mergingVariables ? "Disable Merged Variables" : "Show Merged Variables"}
-            </button>
-          </div>
-        ): ''}
       </div>
     </div>
     <div className="bg-gray-50 relative">
@@ -275,12 +232,6 @@ export default function App() {
         <AuthModal
           onClose={() => setShowAuthModal(false)}
           isFirstUser={isFirstUser}
-        />
-      )}
-      {showMergeVariablesModal && (
-        <MergeVariablesModal
-          onClose={() => setShowMergeVariablesModal(false)}
-          onMerge={handleMergeVariables}
         />
       )}
     </div>

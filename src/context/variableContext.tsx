@@ -1,6 +1,5 @@
 import React, { createContext, useState, useContext } from "react";
 
-
 export interface Variable {
   id: string;
   token: string;

@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from 'react';
-// import { Variable } from '../types/variable';
 import { useVariables, Variable } from '../context/variableContext';
 
 interface MergeVariableEditFormProps {

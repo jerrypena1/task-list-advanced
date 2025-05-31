@@ -18,7 +18,6 @@ export function CodeBlock({ code, language }: CodeBlockProps) {
   const [renderedCode, setRenderedCode] = useState(code);
   const timeoutRef = useRef<number>();
 
-
   const { variables, mergingVariables } = useVariables();
 
   useEffect(() => {

@@ -5,7 +5,7 @@ import { ListEditor } from './ListEditor';
 import { SaveImportModal } from '../SaveImportModal';
 import { Task } from '../../types/task';
 import { useVariables } from '../../context/variableContext';
-import { ImportDataType } from '../../types/importData';
+import { isImportDataType } from '../../types/importData';
 
 interface AdminDashboardProps {
   onClose: () => void;
@@ -43,10 +43,6 @@ export function AdminDashboard({ onClose, onError }: AdminDashboardProps) {
     setShowSaveImportModal(false);
     fetchLists();
   }
-
-  const isImportDataType = (data: any): data is ImportDataType => {
-    return Array.isArray(data.tasks) && Array.isArray(data.variables);
-  };
 
   const handleImport = () => {
     const input = document.createElement('input');
