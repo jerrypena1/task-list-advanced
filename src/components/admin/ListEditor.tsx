@@ -59,9 +59,6 @@ export function ListEditor({ list, onSave, onCancel, onError }: ListEditorProps)
 
     setSaving(true);
     try {
-      // TODO 
-      console.log('name', name);
-
       await saveTaskList(name, tasks, variables, isExample);
       onSave();
     } catch (error) {
